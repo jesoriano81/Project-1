@@ -1,0 +1,33 @@
+---
+- name: Web Servers Configuration
+  hosts: webservers
+  remote_user: Red-Admin
+  become: true
+  tasks:
+    - name: Docker Installation
+      apt:
+        force_apt_get: yes
+        update_cache: yes
+        name: docker.io
+        state: present
+    - name: Pip Installation
+      apt:
+        force_apt_get: yes
+        name: python3-pip
+        state: present
+    - name: Docker Python Module Installation
+      pip:
+        name: docker
+        state: present
+    - name: Docker DVWA Container Download and Launch
+      docker_container:
+        name: dvwa
+        image: cyberxsecurity/dvwa
+        state: started
+        restart_policy: always
+        published_ports: 80:80
+    - name: Docker Service Enable
+      systemd:
+        name: docker
+        enabled: yes
+
